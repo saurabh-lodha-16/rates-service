@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  rates-service:
+    container_name: rates-service
+    build:
+      context: .
+    volumes:
+      - ./src:/usr/src/app/src
+      - /usr/src/app/node_modules
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
+    command: yarn run start:dev
+    env_file:
+      - .env
+    networks:
+      - rates-service-network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+  postgres:
+    container_name: postgres
+    image: library/postgres:12.2-alpine
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=database
+    ports:
+      - '5432:5432'
+    volumes:
+      - db-data:/data
+    networks:
+      - rates-service-network
+    restart: unless-stopped
+networks:
+  rates-service-network:
+volumes:
+  db-data:
