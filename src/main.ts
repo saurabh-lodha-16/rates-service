@@ -5,6 +5,7 @@ import Config from './config/configuration';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   const config = new DocumentBuilder()
     .setTitle('Rates Service')
     .setDescription('The Rates Service API description')
