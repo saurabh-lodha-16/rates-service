@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { HttpService, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { IApiUrlConfig, IApiResponse } from '../utils/interfaces';
 import { GetLiveRatesDto } from '../utils/dtos';
@@ -7,6 +8,7 @@ import { ApiResponseHandler } from '../utils/api';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Rates } from '../entities/rates.entity';
 import Config from 'src/config/configuration';
+const lodash = require('lodash');
 
 @Injectable()
 export class RatesService {
@@ -40,7 +42,7 @@ export class RatesService {
         rates = cryptoApiResponse.data;
       } else {
         const latestRates = (await this.ratesRepository.getLatestRate()).rates;
-        if (!latestRates) {
+        if (lodash.isEmpty(latestRates)) {
           return this.apiResponseHandler.handleFailed(
             `Failed to fetch rates`,
             {},
@@ -66,6 +68,12 @@ export class RatesService {
         });
         rates = filteredRatesByBaseAndTarget;
       }
+      if (lodash.isEmpty(rates)) {
+        return this.apiResponseHandler.handleFailed(
+          `Failed to fetch rates`,
+          {},
+        );
+      }
       return this.apiResponseHandler.handleSuccess(
         `Successfully retrieved rates.`,
         rates,
@@ -82,7 +90,7 @@ export class RatesService {
   public async getRateByID(id: number): Promise<IApiResponse<Rates>> {
     try {
       const result = await this.ratesRepository.getRateByID(id);
-      if (!result) {
+      if (lodash.isEmpty(result)) {
         return this.apiResponseHandler.handleFailed(
           `Failed to get rate by id`,
           {},
@@ -106,7 +114,7 @@ export class RatesService {
   public async getLatestRate(): Promise<IApiResponse<Rates>> {
     try {
       const result = await this.ratesRepository.getLatestRate();
-      if (!result) {
+      if (lodash.isEmpty(result)) {
         return this.apiResponseHandler.handleFailed(
           `Failed to retrieve latest rate from db`,
           {},
