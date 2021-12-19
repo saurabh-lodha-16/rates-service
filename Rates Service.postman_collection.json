@@ -1,0 +1,108 @@
+{
+	"info": {
+		"_postman_id": "6795de4f-2c8c-4b91-a3db-9bc2145b6dfc",
+		"name": "Rates Service",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Latest Rate",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/rates/latest",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"rates",
+						"latest"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Rate by ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/rates/1",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"rates",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Live Rate",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/rates/live?from=BTC&to=INR",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"rates",
+						"live"
+					],
+					"query": [
+						{
+							"key": "from",
+							"value": "BTC"
+						},
+						{
+							"key": "to",
+							"value": "INR"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Health Checks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": null
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "localhost:3000"
+		}
+	]
+}
