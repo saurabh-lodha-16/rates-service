@@ -8,6 +8,8 @@ import { ApiResponseHandler } from '../utils/api';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { Rates } from '../entities/rates.entity';
 import Config from 'src/config/configuration';
+import { WebsocketGateway } from 'src/websocket/websocket.gateway';
+import { WS_MESSAGES, WS_ROOMS } from 'src/utils/enums';
 const lodash = require('lodash');
 
 @Injectable()
@@ -18,6 +20,7 @@ export class RatesService {
     @InjectRepository(RatesRepository) private ratesRepository: RatesRepository,
     private httpService: HttpService,
     private apiResponseHandler: ApiResponseHandler,
+    private websocketGateway: WebsocketGateway,
   ) {
     this.logger = new Logger('RatesService');
   }
@@ -156,6 +159,7 @@ export class RatesService {
         cryptoApiResponse.data
       ) {
         await this.storeRatesInDb(cryptoApiResponse.data);
+        await this.pushRatesToConnectedClients(cryptoApiResponse.data);
       }
     } catch (error) {
       this.logger.error(`${error}`);
@@ -185,6 +189,22 @@ export class RatesService {
       this.logger.verbose(`Storing rates in DB completed`);
     } catch (error) {
       this.logger.error(`${error}`);
+    }
+  }
+
+  private async pushRatesToConnectedClients(rates: any): Promise<void> {
+    try {
+      this.logger.verbose(`Pushing Rates via Websocket`);
+      await this.websocketGateway.emitWebSocketEvent({
+        messageType: WS_MESSAGES.ratesWSEvent,
+        data: rates,
+        roomName: WS_ROOMS.rates,
+      });
+      this.logger.verbose(`Successfully pushed rates to all connected clients`);
+    } catch (error) {
+      this.logger.error(
+        `Failed to send rates to all connected clients. Reason: ${error}`,
+      );
     }
   }
 }
